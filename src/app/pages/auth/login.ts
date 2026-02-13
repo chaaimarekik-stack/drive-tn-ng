@@ -90,14 +90,15 @@ export class Login {
         this.errorMessage = null;
         this.isLoading = true;
 
-        this.authService
-            .login({ email: this.email, password: this.password, portal: null })
-            .pipe(finalize(() => (this.isLoading = false)))
-            .subscribe({
-                next: () => this.router.navigateByUrl('/'),
-                error: () => {
-                    this.errorMessage = 'Authentication failed. Please verify your credentials.';
-                }
-            });
+        this.authService.login({ email: this.email, password: this.password, portal: null }).subscribe({
+            next: () => {
+                this.isLoading = false;
+                void this.router.navigateByUrl('/');
+            },
+            error: () => {
+                this.isLoading = false;
+                this.errorMessage = 'Authentication failed. Please verify your credentials.';
+            }
+        });
     }
 }
