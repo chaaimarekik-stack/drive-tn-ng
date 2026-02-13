@@ -8,7 +8,7 @@ import { SKIP_AUTH } from './auth.interceptor';
 export class AuthService {
     private readonly http = inject(HttpClient);
 
-    private readonly apiBaseUrl = 'http://localhost:63998/api/auth';
+    private readonly apiBaseUrl = '/api/auth';
 
     private readonly accessTokenSubject = new BehaviorSubject<string | null>(null);
 
