@@ -13,10 +13,10 @@ import { AuthService } from '@/app/core/auth/auth.service';
     standalone: true,
     imports: [CommonModule, AppTopbar, AppSidebar, RouterModule, AppFooter],
     template: `<div class="layout-wrapper" [ngClass]="containerClass()">
+        <app-topbar></app-topbar>
         @if (isAuthenticated()) {
-            <app-topbar></app-topbar>
+            <app-sidebar></app-sidebar>
         }
-        <app-sidebar></app-sidebar>
         <div class="layout-main-container">
             <div class="layout-main">
                 <router-outlet></router-outlet>
@@ -48,8 +48,8 @@ export class AppLayout {
         const config = this.layoutService.layoutConfig();
         const state = this.layoutService.layoutState();
         return {
-            'layout-overlay': config.menuMode === 'overlay',
-            'layout-static': config.menuMode === 'static',
+            'layout-overlay': config.menuMode === 'overlay' && this.isAuthenticated(),
+            'layout-static': config.menuMode === 'static' && this.isAuthenticated(),
             'layout-static-inactive': state.staticMenuDesktopInactive && config.menuMode === 'static',
             'layout-overlay-active': state.overlayMenuActive,
             'layout-mobile-active': state.mobileMenuActive
