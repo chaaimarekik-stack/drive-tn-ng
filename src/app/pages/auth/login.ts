@@ -1,7 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { finalize } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
@@ -65,11 +64,13 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
                 </div>
             </div>
         </div>
-    `
+    `,
+    changeDetection: ChangeDetectionStrategy.Default
 })
 export class Login {
     private readonly authService = inject(AuthService);
     private readonly router = inject(Router);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
     email: string = '';
 
@@ -98,6 +99,7 @@ export class Login {
             error: () => {
                 this.isLoading = false;
                 this.errorMessage = 'Authentication failed. Please verify your credentials.';
+                this.changeDetectorRef.detectChanges();
             }
         });
     }
