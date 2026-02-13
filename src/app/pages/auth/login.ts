@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
+import { AuthService } from '@/app/core/auth/auth.service';
 import { AppFloatingConfigurator } from '../../layout/component/app.floatingconfigurator';
 
 @Component({
@@ -54,7 +55,10 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
                                 </div>
                                 <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
                             </div>
-                            <p-button label="Sign In" styleClass="w-full" routerLink="/"></p-button>
+                            @if (errorMessage) {
+                                <small class="text-red-500 block mb-4">{{ errorMessage }}</small>
+                            }
+                            <p-button label="Sign In" styleClass="w-full" [loading]="isLoading" (onClick)="onSignIn()"></p-button>
                         </div>
                     </div>
                 </div>
@@ -63,9 +67,37 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
     `
 })
 export class Login {
+    private readonly authService = inject(AuthService);
+    private readonly router = inject(Router);
+
     email: string = '';
 
     password: string = '';
 
     checked: boolean = false;
+
+    isLoading: boolean = false;
+
+    errorMessage: string | null = null;
+
+    onSignIn(): void {
+        if (!this.email || !this.password) {
+            this.errorMessage = 'Email and password are required.';
+            return;
+        }
+
+        this.errorMessage = null;
+        this.isLoading = true;
+
+        this.authService.login({ email: this.email, password: this.password, portal: null }).subscribe({
+            next: () => {
+                this.isLoading = false;
+                void this.router.navigateByUrl('/');
+            },
+            error: () => {
+                this.isLoading = false;
+                this.errorMessage = 'Authentication failed. Please verify your credentials.';
+            }
+        });
+    }
 }
