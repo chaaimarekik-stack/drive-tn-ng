@@ -1,18 +1,17 @@
-import { CanActivateFn, Router } from '@angular/router';
+import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import { inject } from '@angular/core';
-import { map } from 'rxjs';
 import { AuthService } from './auth.service';
 
-export const authGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = (): boolean | UrlTree => {
     const authService = inject(AuthService);
     const router = inject(Router);
 
-    return authService.initializeSession().pipe(map((isAuthenticated) => (isAuthenticated ? true : router.createUrlTree(['/auth/login']))));
+    return authService.getAccessToken() ? true : router.createUrlTree(['/auth/login']);
 };
 
-export const loginRedirectGuard: CanActivateFn = () => {
+export const loginRedirectGuard: CanActivateFn = (): boolean | UrlTree => {
     const authService = inject(AuthService);
     const router = inject(Router);
 
-    return authService.initializeSession().pipe(map((isAuthenticated) => (isAuthenticated ? router.createUrlTree(['/']) : true)));
+    return authService.getAccessToken() ? router.createUrlTree(['/']) : true;
 };

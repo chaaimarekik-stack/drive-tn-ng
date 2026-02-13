@@ -1,6 +1,6 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable, catchError, finalize, map, of, shareReplay, tap, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, finalize, shareReplay, tap, throwError } from 'rxjs';
 import { AuthResponse, LoginRequest } from './auth.model';
 import { SKIP_AUTH } from './auth.interceptor';
 
@@ -21,17 +21,6 @@ export class AuthService {
     login(request: LoginRequest): Observable<AuthResponse> {
         return this.http.post<AuthResponse>(`${this.apiBaseUrl}/login`, request, { withCredentials: true, context: new HttpContext().set(SKIP_AUTH, true) }).pipe(
             tap((response) => this.setSession(response.accessToken))
-        );
-    }
-
-    initializeSession(): Observable<boolean> {
-        if (this.getAccessToken()) {
-            return of(true);
-        }
-
-        return this.refreshToken().pipe(
-            map(() => true),
-            catchError(() => of(false))
         );
     }
 

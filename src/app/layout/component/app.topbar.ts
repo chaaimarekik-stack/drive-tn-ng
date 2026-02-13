@@ -5,16 +5,22 @@ import { CommonModule } from '@angular/common';
 import { StyleClassModule } from 'primeng/styleclass';
 import { AppConfigurator } from './app.configurator';
 import { LayoutService } from '@/app/layout/service/layout.service';
+import { AuthService } from '@/app/core/auth/auth.service';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { AppSidebar } from '@/app/layout/component/app.sidebar';
 
 @Component({
     selector: 'app-topbar',
     standalone: true,
-    imports: [RouterModule, CommonModule, StyleClassModule, AppConfigurator],
+    imports: [RouterModule, CommonModule, StyleClassModule, AppConfigurator, AppSidebar],
     template: ` <div class="layout-topbar">
         <div class="layout-topbar-logo-container">
-            <button class="layout-menu-button layout-topbar-action" (click)="layoutService.onMenuToggle()">
-                <i class="pi pi-bars"></i>
-            </button>
+            @if (isAuthenticated()) {
+                <button class="layout-menu-button layout-topbar-action" (click)="layoutService.onMenuToggle()">
+                    <i class="pi pi-bars"></i>
+                </button>
+            }
+
             <a class="layout-topbar-logo" routerLink="/">
                 <svg viewBox="0 0 54 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -83,6 +89,10 @@ import { LayoutService } from '@/app/layout/service/layout.service';
 })
 export class AppTopbar {
     items!: MenuItem[];
+
+    private readonly authService = inject(AuthService);
+
+    readonly isAuthenticated = toSignal(this.authService.isAuthenticated$, { initialValue: false });
 
     layoutService = inject(LayoutService);
 

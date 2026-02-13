@@ -64,11 +64,13 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
                 </div>
             </div>
         </div>
-    `
+    `,
+    changeDetection: ChangeDetectionStrategy.Default
 })
 export class Login {
     private readonly authService = inject(AuthService);
     private readonly router = inject(Router);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
     email: string = '';
 
@@ -97,6 +99,7 @@ export class Login {
             error: () => {
                 this.isLoading = false;
                 this.errorMessage = 'Authentication failed. Please verify your credentials.';
+                this.changeDetectorRef.detectChanges();
             }
         });
     }
